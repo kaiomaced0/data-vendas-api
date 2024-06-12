@@ -24,7 +24,7 @@ public record ProdutoResponseDTO(
                 produto.getFornecedor().getId(),
                 produto.getMarca().getId(),
                 // A implementação abaixo assume que você tem um método ou uma maneira de obter uma lista de CategoriaResponseDTO a partir de uma lista de Categoria.
-                produto.getCategorias().stream().map(categoria -> new CategoriaResponseDTO(categoria)).collect(Collectors.toList())
+                produto.getCategorias().stream().map(CategoriaResponseDTO::new).collect(Collectors.toList())
         );
     }
 }
