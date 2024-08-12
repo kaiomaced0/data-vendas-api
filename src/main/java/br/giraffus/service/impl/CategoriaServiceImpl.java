@@ -67,7 +67,7 @@ public class CategoriaServiceImpl implements CategoriaService {
         try {
             Usuario u = usuarioRepository.findById(getPerfilUsuarioLogado().id());
             LOG.info("Requisição Categoria.getAll()");
-            return Response.ok(repository.listAll().stream().filter(c -> u.getEmpresa().equals(c.getEmpresa())).filter(EntityClass::getAtivo)
+            return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream().filter(EntityClass::getAtivo)
                     .map(CategoriaResponseDTO::new)
                     .collect(Collectors.toList())).build();
         } catch (Exception e) {

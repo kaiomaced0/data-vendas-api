@@ -49,9 +49,7 @@ public class VendaServiceImpl implements VendaService {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Venda.getAll()");
-            return repository.listAll().stream().filter(v -> Objects.equals(v.getEmpresa(), u.getEmpresa())).filter(EntityClass::getAtivo)
-                    .map(VendaResponseDTO::new)
-                    .collect(Collectors.toList());
+            return repository.findByEmpresa(u.getEmpresa().getId()).stream().map(VendaResponseDTO::new).collect(Collectors.toList());
         } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Venda.getAll()");
             return null;

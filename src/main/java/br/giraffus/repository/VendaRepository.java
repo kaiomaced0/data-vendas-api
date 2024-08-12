@@ -13,4 +13,9 @@ public class VendaRepository implements PanacheRepository<Venda> {
             return null;
         return find("UPPER(nome) LIKE ?1 ", "%" + nome.toUpperCase() + "%").list();
     }
+    public List<Venda> findByEmpresa(Long empresa) {
+        if (empresa == null)
+            return null;
+        return find("empresa.id = ?1 ", empresa).list();
+    }
 }
