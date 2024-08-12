@@ -96,6 +96,7 @@ public class VendaServiceImpl implements VendaService {
                 venda.setValorTotal(venda.getValorTotal() + i.getPreco());
                 venda.getItemProdutos().add(i);
             } );
+            venda.setEmpresa(u.getEmpresa());
             venda.setObservacao(vendaDTO.observacao());
             repository.persist(venda);
             return Response.ok(new VendaResponseDTO(venda)).build();
