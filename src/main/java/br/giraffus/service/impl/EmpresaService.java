@@ -109,6 +109,20 @@ public class EmpresaService {
 
     }
 
+    @Transactional
+    public Response insertMetaMes(Double meta){
+        try{
+            Log.info("Requisição Empresa.insertMetaMes()");
+            Usuario logado = new Usuario();
+            logado = usuarioRepository.findByLogin(jsonWebToken.getSubject());
+            logado.getEmpresa().setMetaMes(meta);
+            return Response.ok().build();
+        }catch (Exception e){
+            Log.error("Requisição Empresa.insertMetaMes()");
+            return Response.noContent().entity(e.getMessage()).build();
+        }
+    }
+
 
     public List<EmpresaResponseDTO> findAll() {
         return repository.listAll().stream().map(e -> new EmpresaResponseDTO(e.getId(), e.getNome())).collect(Collectors.toList());

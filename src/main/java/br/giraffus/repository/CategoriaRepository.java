@@ -19,4 +19,5 @@ public class CategoriaRepository implements PanacheRepository<Categoria> {
             return null;
         return find("empresa.id = ?1 ", empresa).list();
     }
+
 }

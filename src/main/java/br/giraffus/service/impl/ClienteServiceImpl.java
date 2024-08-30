@@ -2,6 +2,7 @@ package br.giraffus.service.impl;
 
 import br.giraffus.dto.*;
 import br.giraffus.dto.responseDTO.ClienteResponseDTO;
+import br.giraffus.dto.responseDTO.ProdutoResponseDTO;
 import br.giraffus.model.Cliente;
 import br.giraffus.model.EntityClass;
 import br.giraffus.model.Usuario;
@@ -39,16 +40,32 @@ public class ClienteServiceImpl implements ClienteService {
     UsuarioRepository usuarioRepository;
 
     @Override
-    public Response getAll() {
+    public Response getAll(int page, int pageSize) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Cliente.getAll()");
             return Response.ok(repository.listAll().stream().filter(c -> c.getEmpresa() == u.getEmpresa()).filter(EntityClass::getAtivo)
+                    .skip((long) (page - 1) * pageSize).limit(pageSize)
                     .map(ClienteResponseDTO::new)
                     .collect(Collectors.toList())).build();
         } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Cliente.getAll()");
             return Response.status(400).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getAllSize(){
+
+        Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
+        try {
+            LOG.info("Requisição Produto.getAllSize()");
+            return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream().filter(EntityClass::getAtivo)
+                    .toList().size()).build();
+        } catch (Exception e) {
+            LOG.error("Erro ao rodar Requisição Produto.getAllSize()", e);
+            return Response.status(400).entity(e.getMessage()).build();
+
         }
     }
 

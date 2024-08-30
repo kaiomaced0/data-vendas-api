@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Categoria extends EntityClass {
+public class  Categoria extends EntityClass {
 
 
     @Column(name = "nome")

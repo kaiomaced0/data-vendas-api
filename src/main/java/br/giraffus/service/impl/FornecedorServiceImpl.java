@@ -47,7 +47,8 @@ public class FornecedorServiceImpl implements FornecedorService {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Fornecedor.getAll()");
-            return repository.listAll().stream().filter(f -> f.getEmpresa() ==u.getEmpresa()).filter(EntityClass::getAtivo)
+            return repository.findByEmpresa(u.getEmpresa().getId()).stream()
+                    .filter(EntityClass::getAtivo)
                     .map(FornecedorResponseDTO::new)
                     .collect(Collectors.toList());
         } catch (Exception e) {

@@ -4,10 +4,7 @@ import br.giraffus.dto.UsuarioDTO;
 import br.giraffus.service.impl.EmpresaService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -22,5 +19,12 @@ public class EmpresaResource {
     @PermitAll
     public Response insertFuncionario(UsuarioDTO usuarioDTO){
         return empresaService.insertFuncionario(usuarioDTO);
+    }
+
+    @PATCH
+    @PermitAll
+    @Path("/metames/{meta}")
+    public Response insertMetaMes(@PathParam("meta") Double meta){
+        return empresaService.insertMetaMes(meta);
     }
 }

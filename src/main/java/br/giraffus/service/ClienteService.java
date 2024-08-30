@@ -5,7 +5,9 @@ import jakarta.ws.rs.core.Response;
 
 public interface ClienteService {
 
-    Response getAll();
+    Response getAll(int page, int pageSize);
+
+    public Response getAllSize();
 
     Response getId(Long id);
 

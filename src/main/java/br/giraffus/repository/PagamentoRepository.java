@@ -13,4 +13,9 @@ public class PagamentoRepository implements PanacheRepository<Pagamento> {
             return null;
         return find("UPPER(nome) LIKE ?1 ", "%" + nome.toUpperCase() + "%").list();
     }
+    public List<Pagamento> findByEmpresa(Long empresa) {
+        if (empresa == null)
+            return null;
+        return find("empresa.id = ?1 ", empresa).list();
+    }
 }

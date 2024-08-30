@@ -63,17 +63,33 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 
     @Override
-    public Response getAll() {
+    public Response getAll(int page, int pageSize) {
         try {
             Usuario u = usuarioRepository.findById(getPerfilUsuarioLogado().id());
             LOG.info("Requisição Categoria.getAll()");
             return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream().filter(EntityClass::getAtivo)
+                    .skip((long) (page - 1) * pageSize).limit(pageSize)
                     .map(CategoriaResponseDTO::new)
                     .collect(Collectors.toList())).build();
         } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Categoria.getAll()");
             return Response
                     .status(400).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getAllSize(){
+
+        Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
+        try {
+            LOG.info("Requisição Categoria.getAllSize()");
+            return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream().filter(EntityClass::getAtivo)
+                    .toList().size()).build();
+        } catch (Exception e) {
+            LOG.error("Erro ao rodar Requisição Categoria.getAllSize()", e);
+            return Response.status(400).entity(e.getMessage()).build();
+
         }
     }
 

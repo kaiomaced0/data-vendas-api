@@ -40,13 +40,13 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Inject
     UsuarioRepository usuarioRepository;
-
     @Override
-    public Response getAll() {
+    public Response getAll(int page, int pageSize) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Produto.getAll()");
             return Response.ok(repository.listAll().stream().filter(p -> p.getEmpresa() == u.getEmpresa()).filter(EntityClass::getAtivo)
+                    .skip((long) (page - 1) * pageSize).limit(pageSize)
                     .map(ProdutoResponseDTO::new)
                     .collect(Collectors.toList())).build();
         } catch (Exception e) {
@@ -55,6 +55,22 @@ public class ProdutoServiceImpl implements ProdutoService {
 
         }
     }
+
+    @Override
+    public Response getAllSize(){
+
+        Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
+        try {
+            LOG.info("Requisição Produto.getAllSize()");
+            return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream().filter(EntityClass::getAtivo)
+                    .toList().size()).build();
+        } catch (Exception e) {
+            LOG.error("Erro ao rodar Requisição Produto.getAllSize()", e);
+            return Response.status(400).entity(e.getMessage()).build();
+
+        }
+    }
+
 
     @Override
     public Response getId(Long id) {

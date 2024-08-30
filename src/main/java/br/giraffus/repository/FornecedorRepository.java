@@ -1,5 +1,6 @@
 package br.giraffus.repository;
 
+import br.giraffus.model.Cliente;
 import br.giraffus.model.Fornecedor;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,5 +13,10 @@ public class FornecedorRepository implements PanacheRepository<Fornecedor> {
         if (nome == null)
             return null;
         return find("UPPER(nome) LIKE ?1 ", "%" + nome.toUpperCase() + "%").list();
+    }
+    public List<Fornecedor> findByEmpresa(Long empresa) {
+        if (empresa == null)
+            return null;
+        return find("empresa.id = ?1 ", empresa).list();
     }
 }

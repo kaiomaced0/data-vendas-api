@@ -43,7 +43,8 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Notificacao.getAll()");
-            return repository.listAll().stream().filter(n -> n.getEmpresa() == u.getEmpresa()).filter(EntityClass::getAtivo).filter(Notificacao::getLida)
+            return repository.findByEmpresa(u.getEmpresa().getId()).stream()
+                    .filter(EntityClass::getAtivo)
                     .map(NotificacaoResponseDTO::new)
                     .collect(Collectors.toList());
         } catch (Exception e) {

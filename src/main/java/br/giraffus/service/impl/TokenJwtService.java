@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,8 @@ public class TokenJwtService{
 
             Instant expiryDate = now.plus(EXPIRATION_TIME);
 
-            Set<String> roles = usuario.getPerfis()
+            Set<String> roles = new HashSet<>();
+            roles = usuario.getPerfis()
                     .stream().map(Perfil::getLabel)
                     .collect(Collectors.toSet());
 

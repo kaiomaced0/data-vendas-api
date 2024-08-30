@@ -9,11 +9,19 @@ public class Empresa extends EntityClass {
 
     private String nome;
 
-    private Double lucro;
+    private Double metaMes;
 
     @OneToOne
     @JoinColumn(name = "admin")
     private Usuario admin;
+
+    public Double getMetaMes() {
+        return metaMes;
+    }
+
+    public void setMetaMes(Double metaMes) {
+        this.metaMes = metaMes;
+    }
 
     public Usuario getAdmin() {
         return admin;
@@ -23,13 +31,6 @@ public class Empresa extends EntityClass {
         this.admin = admin;
     }
 
-    public Double getLucro() {
-        return lucro;
-    }
-
-    public void setLucro(Double lucro) {
-        this.lucro = lucro;
-    }
 
     public String getNome() {
         return nome;

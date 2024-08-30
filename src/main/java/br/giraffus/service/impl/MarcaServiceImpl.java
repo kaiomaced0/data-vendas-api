@@ -41,7 +41,8 @@ public class MarcaServiceImpl implements MarcaService {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Marca.getAll()");
-            return repository.findAll().stream().filter(m -> m.getEmpresa() == u.getEmpresa()).filter(EntityClass::getAtivo)
+            return repository.findByEmpresa(u.getEmpresa().getId()).stream()
+                    .filter(EntityClass::getAtivo)
                     .map(MarcaResponseDTO::new)
                     .collect(Collectors.toList());
         } catch (Exception e) {

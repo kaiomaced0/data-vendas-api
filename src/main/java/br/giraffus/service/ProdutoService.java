@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface ProdutoService {
 
-    public Response getAll();
+    public Response getAll(int page, int pageSize);
+
+    public Response getAllSize();
 
     public Response getId(Long id);
 
