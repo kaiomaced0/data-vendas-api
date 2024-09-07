@@ -19,9 +19,17 @@ public class CategoriaResource {
 
     @GET
     @PermitAll
-    public Response getAll() {
-        return service.getAll();
+    @Path("/{page}/{pageSize}")
+    public Response getAll(@PathParam("page") int page, @PathParam("pageSize") int pageSize) {
+        return service.getAll(page, pageSize);
     }
+
+    @GET
+    @PermitAll
+    @Path("/size")
+    public Response getAllSize() {
+    return service.getAllSize();
+}
 
     @GET
     @Path("/{id}")
