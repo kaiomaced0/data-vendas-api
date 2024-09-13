@@ -45,14 +45,30 @@ public class VendaServiceImpl implements VendaService {
     ProdutoRepository produtoRepository;
 
     @Override
-    public List<VendaResponseDTO> getAll() {
+    public Response getAll(int page, int pageSize) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Venda.getAll()");
-            return repository.findByEmpresa(u.getEmpresa().getId()).stream().map(VendaResponseDTO::new).collect(Collectors.toList());
+            return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream()
+                    .skip((long) (page - 1) * pageSize).limit(pageSize)
+                    .map(VendaResponseDTO::new).collect(Collectors.toList())).build();
         } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Venda.getAll()");
-            return null;
+            return Response.status(400).entity(e.getMessage()).build();
+        }
+    }
+    @Override
+    public Response getAllSize(){
+
+        Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
+        try {
+            LOG.info("Requisição Categoria.getAllSize()");
+            return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream().filter(EntityClass::getAtivo)
+                    .toList().size()).build();
+        } catch (Exception e) {
+            LOG.error("Erro ao rodar Requisição Categoria.getAllSize()", e);
+            return Response.status(400).entity(e.getMessage()).build();
+
         }
     }
 

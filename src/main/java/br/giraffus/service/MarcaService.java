@@ -10,7 +10,10 @@ import java.util.List;
 
 public interface MarcaService {
 
-    List<MarcaResponseDTO> getAll();
+
+    public Response getAll(int page, int pageSize);
+
+    public Response getAllSize();
 
     Response getId(Long id);
 

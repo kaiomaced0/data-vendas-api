@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface VendaService {
 
-    List<VendaResponseDTO> getAll();
+    public Response getAll(int page, int pageSize);
+
+    public Response getAllSize();
 
     Response getId(Long id);
 

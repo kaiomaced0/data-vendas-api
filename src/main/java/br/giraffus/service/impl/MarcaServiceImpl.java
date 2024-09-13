@@ -3,6 +3,7 @@ package br.giraffus.service.impl;
 import br.giraffus.dto.MarcaDTO;
 import br.giraffus.dto.MarcaUpdateDTO;
 import br.giraffus.dto.responseDTO.MarcaResponseDTO;
+import br.giraffus.dto.responseDTO.VendaResponseDTO;
 import br.giraffus.model.EntityClass;
 import br.giraffus.model.Marca;
 import br.giraffus.model.Usuario;
@@ -36,18 +37,32 @@ public class MarcaServiceImpl implements MarcaService {
     @Inject
     UsuarioRepository usuarioRepository;
 
+
     @Override
-    public List<MarcaResponseDTO> getAll() {
+    public Response getAll(int page, int pageSize) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Marca.getAll()");
-            return repository.findByEmpresa(u.getEmpresa().getId()).stream()
-                    .filter(EntityClass::getAtivo)
-                    .map(MarcaResponseDTO::new)
-                    .collect(Collectors.toList());
+            return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream()
+                    .skip((long) (page - 1) * pageSize).limit(pageSize)
+                    .map(MarcaResponseDTO::new).collect(Collectors.toList())).build();
         } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Marca.getAll()");
-            return null;
+            return Response.status(400).entity(e.getMessage()).build();
+        }
+    }
+    @Override
+    public Response getAllSize(){
+
+        Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
+        try {
+            LOG.info("Requisição Marca.getAllSize()");
+            return Response.ok(repository.findByEmpresa(u.getEmpresa().getId()).stream().filter(EntityClass::getAtivo)
+                    .toList().size()).build();
+        } catch (Exception e) {
+            LOG.error("Erro ao rodar Requisição Marca.getAllSize()", e);
+            return Response.status(400).entity(e.getMessage()).build();
+
         }
     }
 
