@@ -21,10 +21,10 @@ public record ProdutoResponseDTO(
                 produto.getDescricao(),
                 produto.getEstoque(),
                 produto.getValor(),
-                produto.getFornecedor().getId(),
-                produto.getMarca().getId(),
-                // A implementação abaixo assume que você tem um método ou uma maneira de obter uma lista de CategoriaResponseDTO a partir de uma lista de Categoria.
-                produto.getCategorias().stream().map(CategoriaResponseDTO::new).collect(Collectors.toList())
-        );
+                (produto.getFornecedor() != null) ? produto.getFornecedor().getId() : null,
+                (produto.getMarca() != null) ? produto.getMarca().getId() : null,
+                (produto.getCategorias() != null) ? produto.getCategorias().stream()
+                        .map(CategoriaResponseDTO::new)
+                        .collect(Collectors.toList()) : null);
     }
 }
