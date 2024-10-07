@@ -40,12 +40,14 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Inject
     UsuarioRepository usuarioRepository;
+
     @Override
     public Response getAll(int page, int pageSize) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Produto.getAll()");
-            return Response.ok(repository.listAll().stream().filter(p -> p.getEmpresa() == u.getEmpresa()).filter(EntityClass::getAtivo)
+            return Response.ok(repository.listAll().stream().filter(p -> p.getEmpresa() == u.getEmpresa())
+                    .filter(EntityClass::getAtivo)
                     .skip((long) (page - 1) * pageSize).limit(pageSize)
                     .map(ProdutoResponseDTO::new)
                     .collect(Collectors.toList())).build();
@@ -57,7 +59,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public Response getAllSize(){
+    public Response getAllSize() {
 
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
@@ -70,7 +72,6 @@ public class ProdutoServiceImpl implements ProdutoService {
 
         }
     }
-
 
     @Override
     public Response getId(Long id) {
@@ -96,16 +97,31 @@ public class ProdutoServiceImpl implements ProdutoService {
         try {
             LOG.info("Requisição Produto.insert()");
             Produto produto = ProdutoDTO.criaProduto(produtoDTO);
-            produto.setFornecedor(fornecedorRepository.findById(produtoDTO.idFornecedor()));
-            produto.setMarca(marcaRepository.findById(produtoDTO.idMarca()));
+            if (produtoDTO.idFornecedor() != null) {
+                Fornecedor f = new Fornecedor();
+                f = fornecedorRepository.findById(produtoDTO.idFornecedor());
+                if (f != null) {
+                    produto.setFornecedor(f);
+                }
+            }
+            if (produtoDTO.idMarca() != null) {
+                Marca m = new Marca();
+                m = marcaRepository.findById(produtoDTO.idMarca());
+                if (m != null) {
+                    produto.setMarca(m);
+                }
+            }
             produto.setEmpresa(u.getEmpresa());
-            produtoDTO.idCategoria().forEach(categoria -> produto.getCategorias().add(categoriaRepository.findById(categoria)));
-                
+            if (produtoDTO.idCategoria() != null) {
+                produtoDTO.idCategoria()
+                        .forEach(categoria -> produto.getCategorias().add(categoriaRepository.findById(categoria)));
+            }
+
             repository.persist(produto);
             Notificacao notificacao = new Notificacao();
             notificacao.setTitulo("Produto adicionado");
             notificacao.setTipoNotificacao(TipoNotificacao.SUCESSO);
-            notificacao.setDescricao("Produto " + produto.getNome()+" criado com sucesso!");
+            notificacao.setDescricao("Produto " + produto.getNome() + " criado com sucesso!");
             notificacao.setEmpresa(u.getEmpresa());
             notificacaoRepository.persist(notificacao);
             return Response.ok(new ProdutoResponseDTO(produto)).build();
@@ -121,17 +137,16 @@ public class ProdutoServiceImpl implements ProdutoService {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Produto.delete()");
-            Produto p =  new Produto();
+            Produto p = new Produto();
             p = repository.findById(id);
-            if(p.getEmpresa() != u.getEmpresa()){
+            if (p.getEmpresa() != u.getEmpresa()) {
                 throw new Exception();
             }
             p.setAtivo(false);
             return Response.ok().build();
-            }
-         catch (Exception e) {
+        } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Produto.delete()", e);
-             return Response.status(400).entity(e.getMessage()).build();
+            return Response.status(400).entity(e.getMessage()).build();
         }
     }
 
@@ -152,7 +167,8 @@ public class ProdutoServiceImpl implements ProdutoService {
                 produto.setMarca(marcaRepository.findById(produtoDTO.idMarca()));
                 produto.setCusto(produtoDTO.custo());
                 produto.setValor(produtoDTO.valor());
-                produtoDTO.idCategoria().forEach(categoria -> produto.getCategorias().add(categoriaRepository.findById(categoria)));
+                produtoDTO.idCategoria()
+                        .forEach(categoria -> produto.getCategorias().add(categoriaRepository.findById(categoria)));
                 return Response.ok().build();
             } else {
                 throw new Exception();
@@ -174,13 +190,13 @@ public class ProdutoServiceImpl implements ProdutoService {
             if (!produto.getAtivo() || produto.getEmpresa() != u.getEmpresa()) {
                 throw new Exception();
             }
-            if(produto.getCategorias() == null)
+            if (produto.getCategorias() == null)
                 produto.setCategorias(new HashSet<>());
 
             categorias.forEach(c -> produto.getCategorias().add(categoriaRepository.findById(c)));
             return Response.ok().build();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Produto.addCategoria()", e);
             return Response.status(400).entity(e.getMessage()).build();
         }
@@ -189,12 +205,13 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public Response estoque() {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
-        try{
+        try {
             LOG.info("Requisição Produto.estoque()");
-            return Response.ok(repository.listAll().stream().filter(p -> p.getEmpresa() == u.getEmpresa()).filter(EntityClass::getAtivo)
+            return Response.ok(repository.listAll().stream().filter(p -> p.getEmpresa() == u.getEmpresa())
+                    .filter(EntityClass::getAtivo)
                     .map(EstoqueResponseDTO::new)
                     .collect(Collectors.toList())).build();
-        }catch (Exception e){
+        } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Produto.estoque()", e);
             return Response.status(400).entity(e.getMessage()).build();
 
@@ -204,18 +221,18 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public Response addEstoque(Long id, Integer quantidade) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
-        try{
+        try {
             LOG.info("Requisição Produto.addEstoque()");
             Produto p = repository.findById(id);
 
-            if(!u.getPerfis().contains(Perfil.SISTEMA)){
-                if(u.getEmpresa() != p.getEmpresa()){
+            if (!u.getPerfis().contains(Perfil.SISTEMA)) {
+                if (u.getEmpresa() != p.getEmpresa()) {
                     throw new Exception("Produto não é da mesma empresa!");
                 }
             }
             p.setEstoque(p.getEstoque() + quantidade);
             return Response.ok(new EstoqueResponseDTO(p)).build();
-        }catch (Exception e){
+        } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Produto.addEstoque()", e);
             return Response.status(400).entity(e.getMessage()).build();
 
@@ -225,18 +242,18 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public Response removeEstoque(Long id, Integer quantidade) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
-        try{
+        try {
             LOG.info("Requisição Produto.removeEstoque()");
             Produto p = repository.findById(id);
 
-            if(!u.getPerfis().contains(Perfil.SISTEMA)){
-                if(u.getEmpresa() != p.getEmpresa()){
+            if (!u.getPerfis().contains(Perfil.SISTEMA)) {
+                if (u.getEmpresa() != p.getEmpresa()) {
                     throw new Exception("Produto não é da mesma empresa!");
                 }
             }
             p.setEstoque(p.getEstoque() - quantidade);
             return Response.ok(new EstoqueResponseDTO(p)).build();
-        }catch (Exception e){
+        } catch (Exception e) {
             LOG.error("Erro ao rodar Requisição Produto.removeEstoque()", e);
             return Response.status(400).entity(e.getMessage()).build();
 
