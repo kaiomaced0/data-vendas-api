@@ -136,7 +136,9 @@ INSERT INTO produto(
 VALUES
     (1, true, 100, 10, 10.00, 20.00, '2023-01-01', 1, 1, 1, 'Produto 1 - Descrição', 'Produto 1'),
     (1, true, 100, 10, 15.00, 25.00, '2023-01-01', 1, 2, 2, 'Produto 2 - Descrição', 'Produto 2'),
-    (1, true, 100, 10, 20.00, 30.00, '2023-01-01', 2, 3, 3, 'Produto 3 - Descrição', 'Produto 3');
+    (1, true, 100, 10, 20.00, 30.00, '2023-01-01', 2, 3, 3, 'Produto 3 - Descrição', 'Produto 3'),
+    (1, true, 100, 10, 50.00, 110.00, '2023-01-01', 1, 4, 1, 'Produto 4 - Descrição', 'Produto 4'),
+    (1, true, 100, 10, 15.00, 70.00, '2023-01-01', 1, 5, 2, 'Produto 5 - Descrição', 'Produto 5');
 
 INSERT INTO lista_categorias(produto_id, categorias_id) VALUES
                                                              (1, 1),
@@ -147,7 +149,9 @@ INSERT INTO lista_categorias(produto_id, categorias_id) VALUES
                                                              (2, 3),
                                                              (3, 1),
                                                              (3, 2),
-                                                             (3, 3);
+                                                             (3, 3),
+                                                             (4, 1),
+                                                             (5, 2);
 
 insert into usuario(ativo, id, nome, cpf, login, senha, empresa_usuario) VALUES
                                                                              (true, 1, 'kaio', '05562849259', 'kaio', 'cBz32i3RfBAIaqKNkTfdDZLrqih7z94jKllRAMiOW+U+b3GTkGAVUJhWsP6LK8KfVkkei6cekKUJpS2bU7VqvQ==', 1),
