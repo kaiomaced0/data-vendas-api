@@ -9,10 +9,24 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Produto extends EntityClass {
 
+    
+    @Size(max = 180)
+    @Column(name = "codigo_barras")
+    private String codigoBarras;
+    
+    @Size(max = 100)
+    @Column(name = "codigo")
+    private String codigo;
+
     @Size(max = 40)
     @Column(name = "nome")
     private String nome;
+    
+    @Size(max = 220)
+    @Column(name = "nome_longo")
+    private String nomeLongo;
 
+    @Size(max = 5000)
     @Column(name = "descricao")
     private String descricao;
 
@@ -43,6 +57,31 @@ public class Produto extends EntityClass {
     @ManyToOne
     @JoinColumn(name = "empresa")
     private Empresa empresa;
+    
+
+    public String getCodigoBarras() {
+        return codigoBarras;
+    }
+
+    public void setCodigoBarras(String codigoBarras) {
+        this.codigoBarras = codigoBarras;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getNomeLongo() {
+        return nomeLongo;
+    }
+
+    public void setNomeLongo(String nomeLongo) {
+        this.nomeLongo = nomeLongo;
+    }
 
     public Empresa getEmpresa() {
         return empresa;
