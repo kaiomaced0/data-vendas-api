@@ -7,6 +7,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Venda extends EntityClass {
+
     @JoinColumn(name = "itemproduto_venda")
     @OneToMany
     private List<ItemProduto> itemProdutos;
@@ -14,12 +15,19 @@ public class Venda extends EntityClass {
     @JoinColumn
     @ManyToOne
     private Cliente cliente;
+
     private String observacao;
+
     private Double valorTotal;
 
     @ManyToOne
     @JoinColumn(name = "empresa")
     private Empresa empresa;
+
+    private Boolean pago;
+
+    private Boolean finalizada;
+    
 
     public Empresa getEmpresa() {
         return empresa;
@@ -55,6 +63,22 @@ public class Venda extends EntityClass {
     }
     public void setValorTotal(Double valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public Boolean getPago() {
+        return pago;
+    }
+
+    public void setPago(Boolean pago) {
+        this.pago = pago;
+    }
+
+    public Boolean getFinalizada() {
+        return finalizada;
+    }
+
+    public void setFinalizada(Boolean finalizada) {
+        this.finalizada = finalizada;
     }
 
     
