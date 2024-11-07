@@ -1,22 +1,35 @@
 package br.giraffus.service.impl;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
+
 import br.giraffus.dto.ProdutoDTO;
-import br.giraffus.dto.ProdutoUpdateDTO;
 import br.giraffus.dto.responseDTO.EstoqueResponseDTO;
+import br.giraffus.dto.responseDTO.ProdutoResponseAdminDTO;
 import br.giraffus.dto.responseDTO.ProdutoResponseDTO;
-import br.giraffus.model.*;
-import br.giraffus.repository.*;
+import br.giraffus.model.EntityClass;
+import br.giraffus.model.Fornecedor;
+import br.giraffus.model.Marca;
+import br.giraffus.model.Notificacao;
+import br.giraffus.model.Perfil;
+import br.giraffus.model.Produto;
+import br.giraffus.model.TipoNotificacao;
+import br.giraffus.model.Usuario;
+import br.giraffus.repository.CategoriaRepository;
+import br.giraffus.repository.FornecedorRepository;
+import br.giraffus.repository.MarcaRepository;
+import br.giraffus.repository.NotificacaoRepository;
+import br.giraffus.repository.ProdutoRepository;
+import br.giraffus.repository.UsuarioRepository;
 import br.giraffus.service.ProdutoService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.jboss.logging.Logger;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ProdutoServiceImpl implements ProdutoService {
@@ -91,6 +104,23 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
+    public Response getIdAdmin(Long id) {
+        Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
+        try {
+            LOG.info("Requisição Produto.getId()");
+            Produto produto = repository.findById(id);
+            if (produto.getAtivo() && produto.getEmpresa() == u.getEmpresa()) {
+                return Response.ok(new ProdutoResponseAdminDTO(produto)).build();
+            } else {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            LOG.error("Erro ao rodar Requisição Produto.getId()", e);
+            return Response.status(400).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
     @Transactional
     public Response insert(ProdutoDTO produtoDTO) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
@@ -152,25 +182,58 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     @Transactional
-    public Response update(Long id, ProdutoUpdateDTO produtoDTO) {
+    public Response update(Long id, ProdutoDTO produtoDTO) {
         Usuario u = usuarioRepository.findByLogin(jsonWebToken.getSubject());
         try {
             LOG.info("Requisição Produto.update()");
             Produto produto = repository.findById(id);
 
             if (produto.getAtivo() && produto.getEmpresa() == u.getEmpresa()) {
+                if (produtoDTO.nome() != null) {
                 produto.setNome(produtoDTO.nome());
-                produto.setDescricao(produtoDTO.descricao());
-                produto.setEstoque(produtoDTO.estoque());
-                produto.setEstoqueMinimo(produtoDTO.estoqueMinimo());
-                produto.setFornecedor(fornecedorRepository.findById(produtoDTO.idFornecedor()));
-                produto.setMarca(marcaRepository.findById(produtoDTO.idMarca()));
-                produto.setCusto(produtoDTO.custo());
-                produto.setValor(produtoDTO.valor());
-                produtoDTO.idCategoria()
-                        .forEach(categoria -> produto.getCategorias().add(categoriaRepository.findById(categoria)));
+                }
+                if (produtoDTO.nomeLongo() != null) {
+                    produto.setNomeLongo(produtoDTO.nomeLongo());
+                }
+                if (produtoDTO.descricao() != null) {
+                    produto.setDescricao(produtoDTO.descricao());
+                }
+                if (produtoDTO.estoque() != null) {
+                    produto.setEstoque(produtoDTO.estoque());
+                }
+                if (produtoDTO.valorCompra() != null) {
+                    produto.setCusto(produtoDTO.valorCompra());
+                }
+                if (produtoDTO.preco() != null) {
+                    produto.setValor(produtoDTO.preco());
+                }
+                if (produtoDTO.estoqueMinimo() != null) {
+                    produto.setEstoqueMinimo(produtoDTO.estoqueMinimo());
+                }
+                if (produtoDTO.idCategoria() != null) {
+                    produto.setCategorias(new HashSet<>());
+                    produtoDTO.idCategoria().forEach(categoria -> {
+                        produto.getCategorias().add(categoriaRepository.findById(categoria));
+                    });
+                }
+                if (produtoDTO.codigo() != null) {
+                    produto.setCodigo(produtoDTO.codigo());
+                }
+                if (produtoDTO.codigoBarras() != null) {
+                    produto.setCodigoBarras(produtoDTO.codigoBarras());
+                }
+                if (produtoDTO.idFornecedor() != null) {
+                    produto.setFornecedor(fornecedorRepository.findById(produtoDTO.idFornecedor()));
+                }
+                if (produtoDTO.idMarca() != null) {
+                    produto.setMarca(marcaRepository.findById(produtoDTO.idMarca()));
+                }
+                repository.update(produto);
+
+                LOG.info("Ok - Produto.update()");
                 return Response.ok().build();
             } else {
+                LOG.error("Erro ao rodar ELSE - Requisição Produto.update()");
                 throw new Exception();
             }
         } catch (Exception e) {

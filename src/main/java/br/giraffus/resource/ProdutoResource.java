@@ -1,16 +1,21 @@
 package br.giraffus.resource;
 
+import java.util.List;
+
 import br.giraffus.dto.ProdutoDTO;
-import br.giraffus.dto.ProdutoUpdateDTO;
-import br.giraffus.dto.responseDTO.ProdutoResponseDTO;
 import br.giraffus.service.ProdutoService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
-
-import java.util.List;
 
 @Path("/produtos")
 @Produces("application/json")
@@ -47,6 +52,13 @@ public class ProdutoResource {
         return service.getId(id);
     }
 
+    @GET
+    @Path("/admin/{id}")
+    @PermitAll
+    public Response getIdAdmin(@PathParam("id") Long id) {
+        return service.getIdAdmin(id);
+    }
+
     @POST
     @PermitAll
     public Response insert(ProdutoDTO produtoDTO) {
@@ -56,8 +68,8 @@ public class ProdutoResource {
     @PUT
     @PermitAll
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, ProdutoUpdateDTO produtoUpdateDTO) {
-        return service.update(id, produtoUpdateDTO);
+    public Response update(@PathParam("id") Long id, ProdutoDTO dto) {
+        return service.update(id, dto);
     }
     @PATCH
     @PermitAll

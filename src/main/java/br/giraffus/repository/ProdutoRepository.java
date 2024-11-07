@@ -19,4 +19,8 @@ public class ProdutoRepository implements PanacheRepository<Produto> {
             return null;
         return find("empresa.id = ?1 ", empresa).list();
     }
+
+    public void update(Produto p){
+        getEntityManager().merge(p);
+    }
 }
